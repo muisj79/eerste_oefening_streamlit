@@ -15,44 +15,35 @@ if uploaded_file is not None:
         # Lees het CSV-bestand in een DataFrame
         df = pd.read_csv(uploaded_file)
 
-        # Toon de eerste paar rijen van de DataFrame
-        st.write("Eerste paar rijen van het CSV-bestand:")
-        st.dataframe(df.head())
+        # Controleer of de benodigde kolommen aanwezig zijn
+        if 'aankoopdatum' in df.columns and 'totaal_bedrag' in df.columns:
+            # Converteer de 'aankoopdatum' kolom naar datetime
+            df['aankoopdatum'] = pd.to_datetime(df['aankoopdatum'])
 
-        # Maak tabbladen
-        tab1, tab2 = st.tabs(["Staafdiagram", "Lijndiagram"])
+            # Toon de eerste paar rijen van de DataFrame
+            st.write("Eerste paar rijen van het CSV-bestand:")
+            st.dataframe(df.head())
 
-        with tab1:
-            st.header("Staafdiagram")
-            # Kies de kolommen voor de staafdiagram
-            x_column = st.selectbox("Kies de x-as kolom", df.columns)
-            y_column = st.selectbox("Kies de y-as kolom", df.columns)
+            # Maak tabbladen
+            tab1, tab2 = st.tabs(["Staafdiagram", "Lijndiagram"])
 
-            # Controleer of de geselecteerde kolommen numerieke waarden bevatten
-            if df[x_column].dtype in ['int64', 'float64'] and df[y_column].dtype in ['int64', 'float64']:
+            with tab1:
+                st.header("Staafdiagram")
                 # Teken de staafdiagram
                 plt.figure(figsize=(10, 6))
-                sns.barplot(x=df[x_column], y=df[y_column])
+                sns.barplot(x='aankoopdatum', y='totaal_bedrag', data=df)
                 plt.xticks(rotation=45)
                 st.pyplot(plt)
-            else:
-                st.error("De geselecteerde kolommen bevatten geen numerieke waarden die geschikt zijn voor een staafdiagram.")
 
-        with tab2:
-            st.header("Lijndiagram")
-            # Kies de kolommen voor de lijndiagram
-            x_column = st.selectbox("Kies de x-as kolom", df.columns, key="line_x")
-            y_column = st.selectbox("Kies de y-as kolom", df.columns, key="line_y")
-
-            # Controleer of de geselecteerde kolommen numerieke waarden bevatten
-            if df[x_column].dtype in ['int64', 'float64'] and df[y_column].dtype in ['int64', 'float64']:
+            with tab2:
+                st.header("Lijndiagram")
                 # Teken de lijndiagram
                 plt.figure(figsize=(10, 6))
-                sns.lineplot(x=df[x_column], y=df[y_column])
+                sns.lineplot(x='aankoopdatum', y='totaal_bedrag', data=df)
                 plt.xticks(rotation=45)
                 st.pyplot(plt)
-            else:
-                st.error("De geselecteerde kolommen bevatten geen numerieke waarden die geschikt zijn voor een lijndiagram.")
+        else:
+            st.error("De benodigde kolommen 'aankoopdatum' en 'totaal_bedrag' zijn niet aanwezig in het CSV-bestand.")
 
     except Exception as e:
         st.error(f"Fout bij het inlezen van het bestand: {e}")
