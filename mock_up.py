@@ -5,7 +5,7 @@ import seaborn as sns
 
 # Titel voor de app
 st.title('Dashboard met Streamlit')
-
+'''
 # Widget om een CSV-bestand te uploaden
 uploaded_file = st.file_uploader("Kies een CSV-bestand", type=["csv"])
 
@@ -48,4 +48,4 @@ if uploaded_file is not None:
 
     except Exception as e:
         st.error(f"Fout bij het inlezen van het bestand: {e}")
-
+'''
