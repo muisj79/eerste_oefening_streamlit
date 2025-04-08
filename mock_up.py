@@ -28,11 +28,15 @@ if uploaded_file is not None:
             x_column = st.selectbox("Kies de x-as kolom", df.columns)
             y_column = st.selectbox("Kies de y-as kolom", df.columns)
 
-            # Teken de staafdiagram
-            plt.figure(figsize=(10, 6))
-            sns.barplot(x=df[x_column], y=df[y_column])
-            plt.xticks(rotation=45)
-            st.pyplot(plt)
+            # Controleer of de geselecteerde kolommen numerieke waarden bevatten
+            if df[x_column].dtype in ['int64', 'float64'] and df[y_column].dtype in ['int64', 'float64']:
+                # Teken de staafdiagram
+                plt.figure(figsize=(10, 6))
+                sns.barplot(x=df[x_column], y=df[y_column])
+                plt.xticks(rotation=45)
+                st.pyplot(plt)
+            else:
+                st.error("De geselecteerde kolommen bevatten geen numerieke waarden die geschikt zijn voor een staafdiagram.")
 
         with tab2:
             st.header("Lijndiagram")
@@ -40,11 +44,15 @@ if uploaded_file is not None:
             x_column = st.selectbox("Kies de x-as kolom", df.columns, key="line_x")
             y_column = st.selectbox("Kies de y-as kolom", df.columns, key="line_y")
 
-            # Teken de lijndiagram
-            plt.figure(figsize=(10, 6))
-            sns.lineplot(x=df[x_column], y=df[y_column])
-            plt.xticks(rotation=45)
-            st.pyplot(plt)
+            # Controleer of de geselecteerde kolommen numerieke waarden bevatten
+            if df[x_column].dtype in ['int64', 'float64'] and df[y_column].dtype in ['int64', 'float64']:
+                # Teken de lijndiagram
+                plt.figure(figsize=(10, 6))
+                sns.lineplot(x=df[x_column], y=df[y_column])
+                plt.xticks(rotation=45)
+                st.pyplot(plt)
+            else:
+                st.error("De geselecteerde kolommen bevatten geen numerieke waarden die geschikt zijn voor een lijndiagram.")
 
     except Exception as e:
         st.error(f"Fout bij het inlezen van het bestand: {e}")
