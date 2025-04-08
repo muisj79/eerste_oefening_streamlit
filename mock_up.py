@@ -1,49 +1,21 @@
-import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-# Titel voor de app
-st.title('Dashboard met Streamlit')
+# CSV inlezen
+df = pd.read_csv("exclusieve_schoenen_verkoop_met_locatie.csv")
 
-# Widget om een CSV-bestand te uploaden
-uploaded_file = st.file_uploader("Kies een CSV-bestand", type=["csv"])
+# Zorg dat de datumkolom echt als datum wordt gezien
+df['datum'] = pd.to_datetime(df['datum'])
 
-# Controleer of er een bestand is geüpload
-if uploaded_file is not None:
-    try:
-        # Lees het CSV-bestand in een DataFrame
-        df = pd.read_csv(uploaded_file)
+# Groeperen op datum en totalen optellen
+df_grouped = df.groupby('datum')['totaal_bedrag'].sum().reset_index()
 
-        # Controleer of de benodigde kolommen aanwezig zijn
-        if 'aankoopdatum' in df.columns and 'totaal_bedrag' in df.columns:
-            # Converteer de 'aankoopdatum' kolom naar datetime
-            df['aankoopdatum'] = pd.to_datetime(df['aankoopdatum'])
-
-            # Toon de eerste paar rijen van de DataFrame
-            st.write("Eerste paar rijen van het CSV-bestand:")
-            st.dataframe(df.head())
-
-            # Maak tabbladen
-            tab1, tab2 = st.tabs(["Staafdiagram", "Lijndiagram"])
-
-            with tab1:
-                st.header("Staafdiagram")
-                # Teken de staafdiagram
-                plt.figure(figsize=(10, 6))
-                sns.barplot(x='aankoopdatum', y='totaal_bedrag', data=df)
-                plt.xticks(rotation=45)
-                st.pyplot(plt)
-
-            with tab2:
-                st.header("Lijndiagram")
-                # Teken de lijndiagram
-                plt.figure(figsize=(10, 6))
-                sns.lineplot(x='aankoopdatum', y='totaal_bedrag', data=df)
-                plt.xticks(rotation=45)
-                st.pyplot(plt)
-        else:
-            st.error("De benodigde kolommen 'aankoopdatum' en 'totaal_bedrag' zijn niet aanwezig in het CSV-bestand.")
-
-    except Exception as e:
-        st.error(f"Fout bij het inlezen van het bestand: {e}")
+# Lijngrafiek maken
+plt.figure(figsize=(10, 6))
+plt.plot(df_grouped['datum'], df_grouped['totaal_bedrag'], marker='o')
+plt.title('Totale verkoop per dag')
+plt.xlabel('Datum')
+plt.ylabel('Totaal bedrag (€)')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
